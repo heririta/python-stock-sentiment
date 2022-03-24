@@ -12,7 +12,6 @@ from textblob import Word
 from datetime import datetime as DT
 from dateutil import tz
 import yfinance as yf
-import matplotlib.pyplot as plt
 import numpy
 import altair as alt
 from streamlit_option_menu import option_menu
