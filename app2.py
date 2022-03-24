@@ -29,14 +29,14 @@ st.set_page_config(page_title="Sentimen Analisis",
 
 selected = option_menu(
     menu_title=None,
-    options=["Sentiment Analyst", "Market Indonesia", "Chart"],
-    icons=["search", "bank2", "file-earmark-bar-graph-fill"],
+    options=["Sentimen Analisis", "Market Indonesia"],
+    icons=["search", "bank2"],
     menu_icon="cast",
     default_index=1,
     orientation=HORIZONTAL,
 )
 
-if selected == "Sentiment Analyst":
+if selected == "Sentimen Analisis":
     search = st.sidebar.text_input('Pencarian :', 'Ekonomi')
     # st.sidebar.write('The current is', search,)
     # st.sidebar.write(type(search))
@@ -168,7 +168,7 @@ if selected == "Sentiment Analyst":
         news_nilai = news_nilai.translate(
             str.maketrans('', '', string.punctuation))
 
-        st.write(news_nilai)
+        # st.write(news_nilai)
         st.write(base_url)
         # st.write(news_properties["tanggal"])
         analysis = TextBlob(news_nilai)
@@ -279,6 +279,15 @@ if selected == "Market Indonesia":
         ticker_symbol != '^JKSE'
         ticker_symbol2 = ticker_symbol+'.JK'
 
+    st.header("Result - Sentimen Analisis")
+    df_sentimen = pd.read_csv("file_sentimen.csv")
+    # df_sentimen
+    # st.write(type(df_sentimen))
+
+    fig = px.line(df_sentimen,
+                  x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
+    st.plotly_chart(fig)
+
     ticker_data = util.get_ticker_data(
         ticker_symbol2, data_period, data_interval)
     # ticker_data
@@ -286,46 +295,46 @@ if selected == "Market Indonesia":
     util.plot_candle_chart(ticker_data)
 
 
-if selected == "Chart":
-    with st.container():
+# if selected == "Chart":
+#     with st.container():
 
-        left_column, right_column = st.columns(2)
-        with left_column:
-            st.header("Chart 1")
-            df_sentimen = pd.read_csv("file_sentimen.csv")
-            # df_sentimen
-            # st.write(type(df_sentimen))
+#         left_column, right_column = st.columns(2)
+#         with left_column:
+#             st.header("Chart 1")
+#             df_sentimen = pd.read_csv("file_sentimen.csv")
+#             # df_sentimen
+#             # st.write(type(df_sentimen))
 
-            fig = px.line(df_sentimen,
-                          x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
-            st.plotly_chart(fig)
+#             fig = px.line(df_sentimen,
+#                           x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
+#             st.plotly_chart(fig)
 
-        with right_column:
-            st.header("Chart 2")
-            df_sentimen = pd.read_csv("file_sentimen.csv")
-            # df_sentimen
-            # st.write(type(df_sentimen))
+#         with right_column:
+#             st.header("Chart 2")
+#             df_sentimen = pd.read_csv("file_sentimen.csv")
+#             # df_sentimen
+#             # st.write(type(df_sentimen))
 
-            fig = px.line(df_sentimen,
-                          x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
-            st.plotly_chart(fig)
-        left_column, right_column = st.columns(2)
-        with left_column:
-            st.header("Chart 3")
-            df_sentimen = pd.read_csv("file_sentimen.csv")
-            # df_sentimen
-            # st.write(type(df_sentimen))
+#             fig = px.line(df_sentimen,
+#                           x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
+#             st.plotly_chart(fig)
+#         left_column, right_column = st.columns(2)
+#         with left_column:
+#             st.header("Chart 3")
+#             df_sentimen = pd.read_csv("file_sentimen.csv")
+#             # df_sentimen
+#             # st.write(type(df_sentimen))
 
-            fig = px.line(df_sentimen,
-                          x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
-            st.plotly_chart(fig)
+#             fig = px.line(df_sentimen,
+#                           x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
+#             st.plotly_chart(fig)
 
-        with right_column:
-            st.header("Chart 4")
-            df_sentimen = pd.read_csv("file_sentimen.csv")
-            # df_sentimen
-            # st.write(type(df_sentimen))
+#         with right_column:
+#             st.header("Chart 4")
+#             df_sentimen = pd.read_csv("file_sentimen.csv")
+#             # df_sentimen
+#             # st.write(type(df_sentimen))
 
-            fig = px.line(df_sentimen,
-                          x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
-            st.plotly_chart(fig)
+#             fig = px.line(df_sentimen,
+#                           x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
+#             st.plotly_chart(fig)

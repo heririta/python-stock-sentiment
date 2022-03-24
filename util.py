@@ -4,7 +4,7 @@ import plotly.express as px
 import streamlit as st
 
 
-# def get_ticker_data(ticker_symbol, data_period, data_interval):
+def get_ticker_data(ticker_symbol, data_period, data_interval):
     ticker_data = yf.download(tickers=ticker_symbol,
                               period=data_period, interval=data_interval)
 
@@ -27,6 +27,6 @@ def plot_candle_chart(ticker_data):
                        )
     )
     candle_fig.update_layout(
-        height=800
+        height=600
     )
     st.write(candle_fig)
