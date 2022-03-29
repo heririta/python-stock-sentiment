@@ -28,13 +28,12 @@ st.set_page_config(page_title="Sentimen Analisis",
 
 selected = option_menu(
     menu_title=None,
-    options=["Sentimen Analisis", "Market Indonesia"],
+    options=["Sentimen Analisis", ""],
     icons=["search", "bank2"],
     menu_icon="cast",
-    default_index=1,
+    default_index=0,
     orientation=HORIZONTAL,
 )
-
 
 if selected == "Sentimen Analisis":
     search = st.sidebar.text_input('Pencarian :', 'IHSG')
@@ -46,6 +45,10 @@ if selected == "Sentimen Analisis":
         ['cnbcindonesia.com', 'cnnindonesia.com',
             'ekonomi.bisnis.com', 'money.kompas.com'],
         ['cnbcindonesia.com', 'cnnindonesia.com', 'ekonomi.bisnis.com', 'money.kompas.com'],)
+
+    
+
+    
 
     # st.sidebar.write('You selected:', options)
     # st.sidebar.write(type(options))
@@ -247,58 +250,35 @@ if selected == "Sentimen Analisis":
     # st.write(type(grouped_df))
 
     df_filter2 = grouped_df.loc[:, ['tanggal', 'nilaisentimen']]
-    grouped_df2 = df_filter2.groupby(['tanggal']).sum().reset_index()
-    grouped_df3 = df_filter2.groupby(['tanggal']).sum()
+    grouped_df2 = df_filter2.groupby(['tanggal']).sum()
     df_filter2
     grouped_df2
-    grouped_df2.to_csv('file_sentimen.csv', index=False)
+    df_filter2.to_csv('file_sentimen.csv', index=False)
 
     st.write('----------------------------------------------------------------')
     st.header("Chart Sentimen")
-    st.line_chart(grouped_df3)
+    st.line_chart(grouped_df2)
 
-    num_rows = grouped_df2.shape[0]
+    # st.header("Sentimen Analisis")
+    # fig = px.line(df_filter2[df_filter2['nilai'] == nilai],
+    #               x="Tanggal", y="nilai", title=search)
+    # st.plotly_chart(fig)
 
-# st.header("Sentimen Analisis")
-# fig = px.line(df_filter2[df_filter2['nilai'] == nilai],
-#               x="Tanggal", y="nilai", title=search)
-# st.plotly_chart(fig)
-
-# https://ksnugroho.medium.com/dasar-text-preprocessing-dengan-python-a4fa52608ffe
-
-if selected == "Market Indonesia":
-    st.header("Result - Sentimen Analisis")
-    df_sentimen = pd.read_csv("file_sentimen.csv")
-
-    num_rows = df_sentimen.shape[0]
-
-    ticker_symbol = st.sidebar.text_input('Stock Symbol :', '^JKSE')
-    # st.sidebar.write(type(ticker_symbol))
-    data_period = st.sidebar.text_input('Period :', str(num_rows)+'d')
-    # st.sidebar.write(type(data_period))
-    data_interval = st.sidebar.radio(
-        'Interval', ['1d', '5d', '15m', '30m', '1h'])
-    # st.sidebar.write(type(data_interval))
-
-    # st.header(ticker_symbol)
-    if ticker_symbol == '^JKSE' or ticker_symbol == '':
-        ticker_symbol2 = '^JKSE'
-    else:
-        ticker_symbol != '^JKSE'
-        ticker_symbol2 = ticker_symbol+'.JK'
-
-    # df_sentimen
-    # st.write(type(df_sentimen))
-
-    fig = px.line(df_sentimen,
-                  x="tanggal", y="nilaisentimen", title="Pencarian terakhir - Sentimen Analisis")
-    st.plotly_chart(fig)
+    # https://ksnugroho.medium.com/dasar-text-preprocessing-dengan-python-a4fa52608ffe
 
     ticker_data = util.get_ticker_data(
         ticker_symbol2, data_period, data_interval)
     # ticker_data
     # st.write(type(ticker_data))
     util.plot_candle_chart(ticker_data)
+
+
+# if selected == "Market Indonesia":
+
+#     st.header("Result - Sentimen Analisis")
+#     df_sentimen = pd.read_csv("file_sentimen.csv")
+#     # df_sentimen
+#     # st.write(type(df_sentimen))
 
 
 # if selected == "Chart":
