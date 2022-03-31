@@ -1,6 +1,5 @@
 import string
 from threading import stack_size
-from tkinter import HORIZONTAL
 from gnews import GNews
 import streamlit as st
 import pandas as pd
@@ -31,8 +30,7 @@ selected = option_menu(
     options=["Sentimen Analisis", "Market Indonesia"],
     icons=["search", "bank2"],
     menu_icon="cast",
-    default_index=1,
-    orientation=HORIZONTAL,
+    default_index=1
 )
 
 
@@ -127,31 +125,34 @@ if selected == "Sentimen Analisis":
 
         base_url = indonesia_news['url']
 
-        article = Article(base_url, config=config)
-        try:
-            article.download()
-            article.parse()
-        except Exception as e:
-            print("error download")
+        # article = Article(base_url, config=config)
+        # try:
+        #     article.download()
+        #     article.parse()
+        # except Exception as e:
+        #     print("error download")
 
         published_date = indonesia_news["published date"]
         published_date2 = date_convert(published_date)
         # st.dataframe(hasilsearch)
-        publish_date = article.publish_date
+        # publish_date = article.publish_date
         st.write(published_date2)
         # st.write(type(published_date2))
 
         # st.write(publish_date)
         # st.write(type(publish_date))
 
-        st.write(article.title)
-        article_meta_data = article.meta_data
-        article_summary = {value for (
-            key, value) in article_meta_data.items() if key == 'description'}
+        # st.write(article.title)
+        article_title = indonesia_news["title"]
+        # article_meta_data = article.meta_data
+        # article_summary = {value for (
+        #     key, value) in article_meta_data.items() if key == 'description'}
+        article_summary = indonesia_news["description"]
         st.write(article_summary)
         try:
             news_properties = {}
-            news_properties["title"] = article.title
+            # news_properties["title"] = article.title
+            news_properties["title"] = article_title
             # news_properties["tanggal"] = publish_date.strftime('%Y-%m-%d')
             news_properties["tanggal"] = published_date2
             news_properties["isi_news"] = article_summary
