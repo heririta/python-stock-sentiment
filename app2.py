@@ -12,12 +12,13 @@ from datetime import datetime as DT
 from dateutil import tz
 import yfinance as yf
 import numpy
-import altair as alt
 from streamlit_option_menu import option_menu
 import plotly.graph_objs as go
 import plotly.express as px
 import util
 from datetime import datetime
+import altair as alt
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 # https://www.webfx.com/tools/emoji-cheat-sheet/
@@ -30,7 +31,8 @@ selected = option_menu(
     options=["Sentimen Analisis", "Market Indonesia"],
     icons=["search", "bank2"],
     menu_icon="cast",
-    default_index=1
+    default_index=1,
+    orientation="horizontal",
 )
 
 
@@ -61,35 +63,7 @@ if selected == "Sentimen Analisis":
 
     # st.write('----------------------------------------------------------------')
 
-    def search_key(word):
-        google_news = GNews(language='id', country='ID', period='1y', max_results=100,
-                            exclude_websites=None)
 
-        # st.write(google_news)
-        # st.write(type(google_news))
-        news = google_news.get_news(word)
-        # st.write(news)
-        # st.write(type(news))
-        return news
-
-    def date_convert(gmt_date):
-        # st.write("Date in GMT: {0}".format(gmt_date) ")
-        # Hardcode from and to time zones
-        from_zone = tz.gettz('GMT')
-        to_zone = tz.gettz('US/Eastern')
-        # gmt = datetime.gmtnow()
-        gmt = DT.strptime(gmt_date, '%a, %d %b %Y %H:%M:%S GMT')
-        # Tell the datetime object that it's in GMT time zone
-        gmt = gmt.replace(tzinfo=from_zone)
-        gmt = gmt.strftime('%Y-%m-%d')
-        # Convert time zone
-        # eastern_time = str(gmt.astimezone(to_zone))
-        # Check if its EST or EDT
-        # if eastern_time[-6:] == "-05:00":
-        #     st.write("Date in US/Eastern: " +eastern_time.replace("-05:00"," EST")")
-        # elif eastern_time[-6:] == "-04:00":
-        #     st.write("Date in US/Eastern: " +eastern_time.replace("-04:00"," EDT")")
-        return gmt
 
     # USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36'
     USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36'
@@ -110,7 +84,7 @@ if selected == "Sentimen Analisis":
             # st.dataframe(search_key(search))
             # st.write(len(search_key(word)))
             # st.write(type(search_key(search)))
-            hasilsearch.extend(search_key(word))
+            hasilsearch.extend(util.search_key(word))
     except Exception as e:
         st.write("")
 
@@ -133,7 +107,7 @@ if selected == "Sentimen Analisis":
         #     print("error download")
 
         published_date = indonesia_news["published date"]
-        published_date2 = date_convert(published_date)
+        published_date2 = util.date_convert(published_date)
         # st.dataframe(hasilsearch)
         # publish_date = article.publish_date
         st.write(published_date2)
@@ -178,10 +152,10 @@ if selected == "Sentimen Analisis":
         try:
             analysis = analysis.translate(to="en")
         except Exception as e:
-            print("error translate")
+            print("")
         # st.write(analysis)
         st.write(analysis.sentiment.polarity)
-
+        
         if analysis.sentiment.polarity > 0.0:
             news_properties['sentimen'] = "Sentiment:: Positive :smiley:"
         elif analysis.sentiment.polarity == 0.0:
@@ -197,6 +171,45 @@ if selected == "Sentimen Analisis":
             news_properties['param'] = analysis.sentiment.polarity
 
         st.write(news_properties['sentimen'])
+
+        
+        sentiment_dict = {'polarity' : analysis.sentiment.polarity, 'subjectivity' : analysis.sentiment.subjectivity}
+        sentiment_df = pd.DataFrame(sentiment_dict.items(), columns=['metric','value'])
+        st.write(sentiment_dict)
+        st.dataframe(sentiment_df)
+        
+        c = alt.Chart(sentiment_df).mark_bar().encode(
+            x='metric',
+            y='value',
+            color='metric'
+            )
+            
+        st.altair_chart(c, use_container_width=True)
+        
+        analyzer = SentimentIntensityAnalyzer()
+        pos_list = []
+        neg_list = []
+        neu_list = []
+        for i in analysis.split():
+            res = analyzer.polarity_scores(i)['compound']
+            if res > 0.1:
+                pos_list.append(i)
+                pos_list.append(res)
+            elif res <= -0.1:
+                neg_list.append(i)
+                neg_list.append(res)
+            else:
+                neu_list.append(i)
+        
+        result = {'positives':pos_list, 'negatives':neg_list, 'neutral':neu_list}
+                
+        st.info("Token Sentiment")
+        
+        token_sentiments = result 
+        st.write(token_sentiments)
+        
+        
+        
 
         hasilanalisis.append(news_properties)
 
