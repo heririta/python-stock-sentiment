@@ -37,7 +37,7 @@ selected = option_menu(
 
 
 if selected == "Sentimen Analisis":
-    search = st.sidebar.text_input('Pencarian :', 'IHSG')
+    search = st.sidebar.text_input('Pencarian :', 'Bank Mandiri')
     # st.sidebar.write('The current is', search,)
     # st.sidebar.write(type(search))
 
@@ -154,44 +154,54 @@ if selected == "Sentimen Analisis":
         except Exception as e:
             print("")
         # st.write(analysis)
-        st.write(analysis.sentiment.polarity)
         
-        if analysis.sentiment.polarity > 0.0:
-            news_properties['sentimen'] = "Sentiment:: Positive :smiley:"
-        elif analysis.sentiment.polarity == 0.0:
-            news_properties['sentimen'] = "Sentiment:: Neutral 😐 "
-        else:
-            news_properties['sentimen'] = "Sentiment:: Negative :angry:"
-
-        if analysis.sentiment.polarity > 0.0:
-            news_properties['param'] = analysis.sentiment.polarity
-        elif analysis.sentiment.polarity == 0.0:
-            news_properties['param'] = analysis.sentiment.polarity
-        else:
-            news_properties['param'] = analysis.sentiment.polarity
-
-        st.write(news_properties['sentimen'])
-
+        col1, col2 = st.columns(2)
         
-        sentiment_dict = {'polarity' : analysis.sentiment.polarity, 'subjectivity' : analysis.sentiment.subjectivity}
-        sentiment_df = pd.DataFrame(sentiment_dict.items(), columns=['metric','value'])
-        st.write(sentiment_dict)
-        st.dataframe(sentiment_df)
-        
-        c = alt.Chart(sentiment_df).mark_bar().encode(
-            x='metric',
-            y='value',
-            color='metric'
-            )
+        with col1:
+    
+            st.info("Library Python Textblob")
             
-        st.altair_chart(c, use_container_width=True)
+            st.write(analysis.sentiment.polarity)
+            
+            if analysis.sentiment.polarity > 0.0:
+                news_properties['sentimen'] = "Sentiment:: Positive :smiley:"
+            elif analysis.sentiment.polarity == 0.0:
+                news_properties['sentimen'] = "Sentiment:: Neutral 😐 "
+            else:
+                news_properties['sentimen'] = "Sentiment:: Negative :angry:"
+    
+            if analysis.sentiment.polarity > 0.0:
+                news_properties['param'] = analysis.sentiment.polarity
+            elif analysis.sentiment.polarity == 0.0:
+                news_properties['param'] = analysis.sentiment.polarity
+            else:
+                news_properties['param'] = analysis.sentiment.polarity
+    
+            st.write(news_properties['sentimen'])
+            
+                
+            
+            sentiment_dict = {'polarity' : analysis.sentiment.polarity, 'subjectivity' : analysis.sentiment.subjectivity}
+            sentiment_df = pd.DataFrame(sentiment_dict.items(), columns=['metric','value'])
+            st.write(sentiment_dict)
+            st.dataframe(sentiment_df)
+            
+            c = alt.Chart(sentiment_df).mark_bar().encode(
+                x='metric',
+                y='value',
+                color='metric'
+                )
+                
+            st.altair_chart(c, use_container_width=True)
         
         analyzer = SentimentIntensityAnalyzer()
         pos_list = []
         neg_list = []
         neu_list = []
+        res_total = 0
         for i in analysis.split():
             res = analyzer.polarity_scores(i)['compound']
+            res_total = res_total + res
             if res > 0.1:
                 pos_list.append(i)
                 pos_list.append(res)
@@ -200,13 +210,27 @@ if selected == "Sentimen Analisis":
                 neg_list.append(res)
             else:
                 neu_list.append(i)
+            
         
         result = {'positives':pos_list, 'negatives':neg_list, 'neutral':neu_list}
-                
-        st.info("Token Sentiment")
+        result_res = res_total
         
-        token_sentiments = result 
-        st.write(token_sentiments)
+        with col2:
+            st.info("Vader Sentiment")
+            
+            token_sentiments = result 
+            st.write(result_res)
+            
+            if result_res > 0.0:
+                result_sentimen = "Sentiment:: Positive :smiley:"
+            elif result_res == 0.0:
+                result_sentimen = "Sentiment:: Neutral 😐 "
+            else:
+                result_sentimen = "Sentiment:: Negative :angry:"
+            
+            st.write(result_sentimen)
+            
+            st.write(token_sentiments)
         
         
         
